@@ -207,8 +207,12 @@ export class Header extends MvuElement {
 				const header = this.shadowRoot.getElementById('headerMobile');
 				const logo = this.shadowRoot.getElementById('headerLogo');
 				const clear = this.shadowRoot.getElementById('headerSearchContainer');
+				const routingButton = this.shadowRoot.getElementById('routingButton');
+				const settingsButton = this.shadowRoot.getElementById('settingsButton');
 
 				header.classList.add('hide');
+				routingButton.classList.add('hide');
+				settingsButton.classList.add('hide');
 				logo.classList.add('hide');
 				if (searchTerm) {
 					clear.classList.add('is-clear-visible');
@@ -217,9 +221,10 @@ export class Header extends MvuElement {
 
 			//in portrait mode we open the main menu to display existing results
 			if (isPortrait) {
-				if (value.length > 0) {
-					openMainMenu();
-				}
+				// if (value.length > 0) {
+				openMainMenu();
+				setTab(TabIds.SEARCH);
+				// }
 			}
 		};
 
@@ -251,7 +256,11 @@ export class Header extends MvuElement {
 				const header = this.shadowRoot.getElementById('headerMobile');
 				const logo = this.shadowRoot.getElementById('headerLogo');
 				const clear = this.shadowRoot.getElementById('headerSearchContainer');
+				const routingButton = this.shadowRoot.getElementById('routingButton');
+				const settingsButton = this.shadowRoot.getElementById('settingsButton');
 
+				routingButton.classList.remove('hide');
+				settingsButton.classList.remove('hide');
 				this.#timeoutId = setTimeout(() => {
 					header.classList.remove('hide');
 					logo.classList.remove('hide');
@@ -280,6 +289,11 @@ export class Header extends MvuElement {
 		const openRoutingTab = () => {
 			setTab(TabIds.ROUTING);
 			setCurrentTool(Tools.ROUTING);
+			openMainMenu();
+		};
+
+		const openSettingTab = () => {
+			setTab(TabIds.MISC);
 			openMainMenu();
 		};
 
@@ -342,22 +356,27 @@ export class Header extends MvuElement {
 						<div class="header__background">
 						</div>
 						<div  class="header__container">
-						<div id="headerSearchContainer" class='header__search-container ${getIsClearClass()}'>
-							<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_title')}">
-								<span class="button_search_icon"></span>					
-							</button>
-							<input id='input' data-test-id title="${translate('header_search_title')}" placeholder='${translate(
-								'header_search_placeholder'
-							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @keydown="${onKeyDown}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
-							<button id="clear" class="header__search-clear" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
-								<span class="border">
-									<span class="icon"> </icon>   							
-								</span>
-							</button>       
-						</div>
-							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
+							<div id="headerSearchContainer" class='header__search-container ${getIsClearClass()}'>
+								<button id="inputFocusButton" @click="${onButtonClick}" class="open-search-button" title="${translate('header_search_title')}">
+									<span class="button_search_icon"></span>					
+								</button>
+								<input id='input' data-test-id title="${translate('header_search_title')}" placeholder='${translate(
+									'header_search_placeholder'
+								)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @keydown="${onKeyDown}" @input="${onInput}" class='header__search' type="search" placeholder="" />          		
+								<button id="clear" class="header__search-clear" @click="${clearSearchInput}" title="${translate('header_search_clear_button')}">   
+									<span class="border">
+										<span class="icon"> </icon>   							
+									</span>
+								</button>       
+							</div>
+							
+							<button id="routingButton"  @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
 								<span class="routing-icon"></span>
 							</button>
+							<button id="settingsButton" @click="${openSettingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
+								<span class="setting-icon"></span>
+							</button>
+							
 						</div>
 						<div  class="header__button-container">
 							<button id="topics_button" data-test-id class="${getActiveClass(TabIds.TOPICS)}" title=${translate(
@@ -375,7 +394,7 @@ export class Header extends MvuElement {
 									${layerCount}
 								</div>
 							</button>
-							<button id="misc_button" data-test-id class="${getActiveClass(TabIds.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
+							<button id="misc_button" data-test-id class="hide ${getActiveClass(TabIds.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
 								<span>
 									${translate('header_tab_misc_button')}
 								</span>

@@ -122,6 +122,11 @@ export class NavigationRail extends MvuElement {
 			const content = html`<ba-mvu-togglefeedbackpanel .onSubmit=${closeModal}></ba-mvu-togglefeedbackpanel>`;
 			openModal(title, content, { steps: 2 });
 		};
+		const openSettingsDialog = () => {
+			const title = translate('BayernAtlas');
+			const content = html`<ba-misc-content-panel></ba-misc-content-panel>`;
+			openModal(title, content, { steps: 2 });
+		};
 
 		const onClickSignIn = async () => {
 			this.#authService.signIn();
@@ -159,7 +164,7 @@ export class NavigationRail extends MvuElement {
 
 		const getFlexOrder = (tabId) => {
 			//first tow are always home-button and separator
-			return reverseTabIds.indexOf(tabId) + 2;
+			return reverseTabIds.indexOf(tabId) + 3;
 		};
 
 		const classes = {
@@ -177,25 +182,34 @@ export class NavigationRail extends MvuElement {
 			</style>
 			<div part="navigation-rail" class=${classMap(classes)}>
 				<div class="fallback-background"></div>
-				<div class="navigation-rail__container">
+				<div class="navigation-rail__container container-quick-nav">
 					<button
 						title=${translate('menu_navigation_rail_home_tooltip')}
-						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}"
-						@click=${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.MISC, TabIds.TOPICS)}
+						class="home ${getIsActive(TabIds.MAPS, TabIds.SEARCH, TabIds.TOPICS)}"
+						@click=${() => this._openHomeTab(TabIds.MAPS, TabIds.SEARCH, TabIds.TOPICS)}
 					>
 						<span class="icon"> </span>
 						<span class="text"> ${translate('menu_navigation_rail_home')} </span>
 					</button>
-					<span class="separator landscape"> </span>
 					<button
 						title=${translate('menu_navigation_rail_routing_tooltip')}
 						class="routing ${getIsVisible(TabIds.ROUTING)} ${getIsActive(TabIds.ROUTING)}"
 						@click=${() => this._openTab(TabIds.ROUTING)}
-						style="order:${getFlexOrder(TabIds.ROUTING)}"
+						style="order:1"
 					>
 						<span class="icon"></span>
 						<span class="text">${translate('menu_navigation_rail_routing')}</span>
 					</button>
+					<button
+						title=${translate('Info / Optionen')}
+						class="misc ${getIsVisible(TabIds.MISC)} ${getIsActive(TabIds.MISC)} "
+						@click=${() => this._openTab(TabIds.MISC)}
+						style="order:1; position:absolute;bottom:0"
+					>
+						<span class="icon"></span>
+						<span class="text">${translate('Info / Optionen')}</span>
+					</button>
+					<span class="separator landscape"> </span>
 					<button
 						title=${translate('menu_navigation_rail_object_info_tooltip')}
 						class=" objectinfo ${getIsVisible(TabIds.FEATUREINFO)} ${getIsActive(TabIds.FEATUREINFO)}"
@@ -216,7 +230,7 @@ export class NavigationRail extends MvuElement {
 					</button>
 					<button
 						title=${translate('menu_navigation_rail_time_travel_tooltip')}
-						class="timeTravel"
+						class="timeTravel hide"
 						@click=${() => this._showTimeTravel()}
 						style="order: ${reverseTabIds.length + 1}"
 					>
@@ -225,7 +239,7 @@ export class NavigationRail extends MvuElement {
 					</button>
 					<button
 						title=${translate('menu_navigation_rail_layer_swipe_tooltip')}
-						class="layerSwipe"
+						class="layerSwipe hide"
 						@click=${() => this._startLayerSwipe()}
 						style="order: ${reverseTabIds.length + 2}"
 					>
@@ -256,7 +270,7 @@ export class NavigationRail extends MvuElement {
 						<span class="icon"> </span>
 						<span class="text">${translate('menu_navigation_rail_close')}</span>
 					</button>
-					<div class="sub-button-container">
+					<div class="sub-button-container hide">
 						<button
 							id="authButton"
 							@click=${signedIn ? onClickSignOut : onClickSignIn}
@@ -268,12 +282,15 @@ export class NavigationRail extends MvuElement {
 						<button id="feedback" @click=${openFeedbackDialog} title=${translate('menu_navigation_rail_feedback')} class="feedback pointer">
 							<span class="icon"></span>
 						</button>
+						<button id="settings" @click=${openSettingsDialog} title=${translate('menu_navigation_rail_settings')} class="settings pointer hide">
+							<span class="icon "> </span>
+						</button>
 						<a
 							id="help"
 							href=${translate('menu_navigation_rail_help_url')}
 							target="_blank"
 							title=${translate('menu_navigation_rail_help')}
-							class="help pointer"
+							class="help pointer "
 						>
 							<span class="icon"></span>
 						</a>

@@ -173,6 +173,22 @@
 .is-active {
 	display: block;
 }
+@media (prefers-reduced-motion: no-preference) {
+	.tabcontent.is-active {
+		animation: tab-content-enter var(--animation-duration-large-open) cubic-bezier(0.22, 1, 0.36, 1) both;
+		transform-origin: top center;
+	}
+}
+@keyframes tab-content-enter {
+	0% {
+		opacity: 0;
+		transform: translate3d(0, 0.6em, 0) scale(0.995);
+	}
+	100% {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
 .is-active ba-feature-info-panel {
 	animation-duration: var(--animation-duration-medium-open);
 	animation-fill-mode: both;

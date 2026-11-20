@@ -13,6 +13,8 @@
 	border-left: 0.3em var(--border1-style) var(--secondary-color);
 }
 .georesource-label__text {
+	margin-top: 0.5em;
+	font-size: 1.1rem;
 	font-weight: bold;
 	padding: 0.8em 1.5em 0.8em 1.3em;
 	flex-grow: 1;

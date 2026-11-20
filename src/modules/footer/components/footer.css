@@ -124,3 +124,17 @@ ba-base-layer-container::part(base-layer-switcher-label),
 ba-base-layer-container::part(group) {
 	display: none;
 }
+
+.test-mehr {
+	font-size: 0.8rem;
+	display: flex;
+	border: none;
+	/* background: color(from var(--primary-bg-color) srgb r g b / var(--alpha1)); */
+	background: transparent;
+	display: block;
+	max-width: 30em;
+	max-height: 3em;
+	border-left: 1px dotted var(--text1);
+	padding: 0.4em 1em;
+	color: var(--text4);
+}
