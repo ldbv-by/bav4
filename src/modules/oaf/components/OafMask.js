@@ -2,6 +2,7 @@
  * @module modules/oaf/components/OafMask
  */
 
+import exclamationTriangleSvg from '@src/assets/icons/exclamation-triangle-fill.svg';
 import { LayerState } from '@src/domain/layer';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
@@ -15,7 +16,6 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { CqlLexer } from '../utils/CqlLexer';
 import { createCqlExpression, createDefaultFilterGroup } from '../utils/oafUtils';
 import addSvg from './assets/add.svg';
-import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import css from './oafMask.css?inline';
@@ -85,7 +85,7 @@ export class OafMask extends MvuElement {
 			(layer) => {
 				if (layer) {
 					const properties = this.getModel().layerProperties;
-					this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: LayerState.ERROR });
+					this.signal(Update_Layer_Properties, { ...properties, featureCount: layer.props?.featureCount ?? null, state: layer.state });
 				}
 			}
 		);
