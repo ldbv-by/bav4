@@ -13,6 +13,7 @@ import { LevelTypes } from '@src/store/notifications/notifications.action';
 import { notificationReducer } from '@src/store/notifications/notifications.reducer';
 import { positionReducer } from '@src/store/position/position.reducer';
 import { TestUtils } from '@test/test-utils';
+import { expect } from 'vitest';
 
 window.customElements.define(OafMask.tag, OafMask);
 window.customElements.define(OafFilterGroup.tag, OafFilterGroup);
@@ -299,26 +300,48 @@ describe('OafMask', () => {
 		describe('when layer  changes', () => {
 			it('shows feature count when layer state is ready', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.OK, props: { featureCount: 10 } });
-				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				const filterResultsElem = element.shadowRoot.querySelector('.feature-count-badge');
 				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
 
 				expect(loadingSvg).toBeNull();
+				expect(partiallyLoadedHintElem).toBeNull();
 				expect(filterResultsElem.label).toBe(10);
 			});
 
-			it('shows feature count when layer state is partially ready', async () => {
+			it('shows feature count when layer state is partially loaded', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
-				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
+				const featureResultsElem = element.shadowRoot.querySelector('.feature-count-badge');
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
 				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
 
 				expect(loadingSvg).toBeNull();
-				expect(filterResultsElem.label).toBe(15);
+				expect(partiallyLoadedHintElem).not.toBeNull();
+				expect(partiallyLoadedHintElem.title).toBe('oaf_mask_title_state_incomplete_data');
+				expect(featureResultsElem.label).toBe(15);
 			});
 
 			it('shows loading icon when layer state is not ready', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.LOADING, props: { featureCount: 10 } });
 				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
+
+				expect(partiallyLoadedHintElem).toBeNull();
 				expect(loadingSvg).not.toBeNull();
+			});
+
+			it('sends notification for partially loaded data when warning-hint is clicked', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
+				const event = new Event('click');
+				const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+				const stopPropagationSpy = vi.spyOn(event, 'stopPropagation');
+				partiallyLoadedHintElem.dispatchEvent(event);
+
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+				expect(store.getState().notifications.latest.payload.content).toBe(partiallyLoadedHintElem.title);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 
 			it('refreshes ui when layerId changes', async () => {
@@ -358,9 +381,9 @@ describe('OafMask', () => {
 			it('shows filter results count', async () => {
 				const element = await setup({}, {}, { props: { featureCount: 42, state: LayerState.OK } });
 				await TestUtils.timeout();
-				const filterResultsElem = element.shadowRoot.querySelector('#filter-results-badge');
-				expect(filterResultsElem.title).toBe('oaf_mask_filter_results 42');
-				expect(filterResultsElem.label).toBe(42);
+				const featureResultsElem = element.shadowRoot.querySelector('.feature-count-badge');
+				expect(featureResultsElem.title).toBe('oaf_mask_feature_count');
+				expect(featureResultsElem.label).toBe(42);
 			});
 
 			it('does not render filter groups', async () => {

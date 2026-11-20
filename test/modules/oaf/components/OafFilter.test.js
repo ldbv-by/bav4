@@ -1297,5 +1297,20 @@ describe('OafFilter', () => {
 			expect(element._parseValue('a24.2', 20.12)).toBe(20.12);
 			expect(element._parseValue('a1a2.1', 'a20.12')).toBe(null);
 		});
+
+		it(`_toLocalizedNumber localizes numbers`, async () => {
+			const element = await setup();
+
+			vi.spyOn(configService, 'getValue').mockReturnValue('de');
+			expect(element._toLocalizedNumber('2.5')).toBe('2,5');
+			expect(element._toLocalizedNumber(2.5252)).toBe('2,5252');
+
+			vi.spyOn(configService, 'getValue').mockReturnValue('en');
+			expect(element._toLocalizedNumber('2.5')).toBe('2.5');
+			expect(element._toLocalizedNumber(2.5252)).toBe('2.5252');
+
+			expect(element._toLocalizedNumber(null)).toBe('');
+			expect(element._toLocalizedNumber()).toBe('');
+		});
 	});
 });

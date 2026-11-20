@@ -9,10 +9,11 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_console_mode).toBe('Edit CQL');
 		expect(map.oaf_mask_add_filter_group).toBe('Add Filter Group');
 		expect(map.oaf_mask_button_apply).toBe('Apply');
-		expect(map.oaf_mask_filter_results).toBe('Results:');
-		expect(map.oaf_mask_filter_not_displayable).toBe(
-			'The CQL expression cannot be displayed visually. The expression can be edited using the “Edit CQL” button.'
-		);
+		expect(map.oaf_mask_feature_count).toBe('Number of features');
+		expect(map.oaf_mask_title_state_incomplete_data).toBe('Data loaded incomplete'),
+			expect(map.oaf_mask_filter_not_displayable).toBe(
+				'The CQL expression cannot be displayed visually. The expression can be edited using the “Edit CQL” button.'
+			);
 		expect(map.oaf_mask_custom_cql_confirmed).toBe('CQL applied');
 		expect(map.oaf_mask_filter_no_queryables).toBe('The OGC API - Features endpoint does not provide any filter capabilities');
 		expect(map.oaf_mask_zoom_to_extent).toBe('Zoom on current result');
@@ -53,8 +54,9 @@ describe('i18n for header module', () => {
 		expect(map.oaf_mask_console_mode).toBe('CQL bearbeiten');
 		expect(map.oaf_mask_add_filter_group).toBe('Neue Filtergruppe');
 		expect(map.oaf_mask_button_apply).toBe('Anwenden');
-		expect(map.oaf_mask_filter_results).toBe('Ergebnisse:');
-		expect(map.oaf_mask_zoom_to_extent).toBe('Auf aktuelles Ergebnis zoomen');
+		expect(map.oaf_mask_feature_count).toBe('Anzahl der Elemente');
+		expect(map.oaf_mask_title_state_incomplete_data).toBe('Daten wurden nur teilweise geladen'),
+			expect(map.oaf_mask_zoom_to_extent).toBe('Auf aktuelles Ergebnis zoomen');
 		expect(map.oaf_mask_filter_not_displayable).toBe(
 			'Der CQL-Ausdruck ist visuell nicht darstellbar. Mit der Schaltfläche "CQL bearbeiten" kann der Ausdruck bearbeitet werden'
 		);
@@ -89,7 +91,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 37;
+		const expectedSize = 38;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
