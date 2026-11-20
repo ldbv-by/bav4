@@ -25,7 +25,7 @@ export const provide = (lang) => {
 				elevationProfile_linearDistance: 'Distance',
 				elevationProfile_could_not_load: 'Elevation Profile could not be loaded',
 				elevationProfile_elevation_precision_missing:
-					'The elevation profile is too long or the point distance is too large to derive accurate values.',
+					'The elevation profile is too long, or the point distance is too large to derive accurate values.',
 				elevationProfile_unknown: 'unknown'
 			};
 
@@ -53,7 +53,7 @@ export const provide = (lang) => {
 				elevationProfile_lowestPoint: 'Tiefster Punkt',
 				elevationProfile_linearDistance: 'Distanz',
 				elevationProfile_could_not_load: 'Das Höhenprofil konnte nicht geladen werden',
-				elevationProfile_elevation_precision_missing: 'Das Höhenprofil ist zu lang oder der Punktabstand zu groß um genaue Werte abzuleiten.',
+				elevationProfile_elevation_precision_missing: 'Das Höhenprofil ist zu lang oder der Punktabstand zu groß, um genaue Werte abzuleiten.',
 				elevationProfile_unknown: 'unbekannt'
 			};
 
