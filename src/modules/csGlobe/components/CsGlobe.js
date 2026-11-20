@@ -4,12 +4,12 @@
 
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
+import { removeLayer } from '@src/store/layers/layers.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { changeLiveZoomCenterRotationPitchAndRoll, changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
-import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, JulianDate, Rectangle, Viewer } from 'cesium';
+import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, Color, JulianDate, Rectangle, Viewer } from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
-import { isArray } from 'chart.js/helpers';
 import { html } from 'lit-html';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
 import css from './csGlobe.css?inline';
@@ -121,7 +121,7 @@ export class CsGlobe extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
-		this._viewer.destroy();
+		this._viewer?.destroy();
 		this._viewer = null;
 	}
 
@@ -143,6 +143,9 @@ export class CsGlobe extends MvuElement {
 			this._viewer = new Viewer(viewerContainer, this.#viewerConfiguration);
 			const scene = this._viewer.scene;
 			scene.globe.maximumScreenSpaceError = Screen_Space_Error_Maximum;
+			scene.backgroundColor = Color.TRANSPARENT;
+			scene.globe.baseColor = Color.WHITE;
+
 			const sscController = this._viewer.scene.screenSpaceCameraController;
 			sscController.minimumZoomDistance = Zoom_Distance_Minimum;
 			sscController.maximumZoomDistance = Zoom_Distance_Maximum;
@@ -243,34 +246,44 @@ export class CsGlobe extends MvuElement {
 
 	_syncLayers() {
 		const { layers } = this.getModel();
-		const updatedIds = layers.map((layer) => layer.id);
 
 		const currentIds = this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
-		// array intersection
-		//	const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
-		const toBeAdded = updatedIds.filter((id) => !currentIds.includes(id));
+		const toBeAdded = layers.filter((layer) => !currentIds.includes(layer.id));
 		// array difference right side
-		//	const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
+		const toBeRemoved = currentIds.filter((id) => !layers.some((layer) => layer.id === id));
+		// array all layers to update
+		const toBeUpdated = layers.filter((layer) => currentIds.includes(layer.id));
 
-		toBeAdded.forEach((id) => {
-			const toCsLayer = (id, geoResource) => {
-				const csLayer = this._layerService.toCsLayer(id, geoResource, this._viewer);
-				return csLayer;
-			};
+		this._getIdsFromImageryLayerCollection(this._viewer.imageryLayers);
 
-			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
-			const geoResource = this._geoResourceService.byId(geoResourceId);
+		toBeRemoved.forEach((layerId) => {
+			const imageryLayers = this._getImageryLayersByLayerId(layerId);
+			for (const imageryLayer of imageryLayers) {
+				this._viewer.imageryLayers.remove(imageryLayer);
+			}
+		});
 
-			const imageryLayer = toCsLayer(id, geoResource);
+		toBeAdded.forEach((layer) => {
+			const geoResource = this._geoResourceService.byId(layer.geoResourceId);
 
-			if (isArray(imageryLayer)) {
-				imageryLayer.forEach((l) => {
+			if (geoResource) {
+				const imageryLayers = this._layerService.toCsLayers(layer.id, geoResource, this._viewer);
+				imageryLayers.forEach((l) => {
 					this._viewer.imageryLayers.add(l);
 				});
+				this._updateImageryLayersZIndex(layer.zIndex, imageryLayers);
+				this._setImageryLayersProperties(layer, imageryLayers);
 			} else {
-				this._viewer.imageryLayers.add(imageryLayer);
+				console.warn(`Could not add an olLayer for id '${layer.id}'`);
+				removeLayer(layer.id);
 			}
+		});
+
+		toBeUpdated.forEach((layer) => {
+			const imageryLayers = this._getImageryLayersByLayerId(layer.id);
+			this._updateImageryLayersZIndex(layer.zIndex, imageryLayers);
+			this._setImageryLayersProperties(layer, imageryLayers);
 		});
 	}
 
@@ -312,6 +325,73 @@ export class CsGlobe extends MvuElement {
 		}
 
 		return result;
+	}
+
+	_getFirstImageryLayerByZIndex(zIndex) {
+		let cachedId = null;
+		let currentZIndex = 0;
+
+		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
+			const imageryLayer = this._viewer.imageryLayers.get(i);
+			const currentId = imageryLayer.id;
+
+			if (cachedId !== null && cachedId !== currentId) {
+				currentZIndex++;
+			}
+
+			if (zIndex === currentZIndex) {
+				return imageryLayer;
+			}
+
+			cachedId = currentId;
+		}
+
+		return -1;
+	}
+
+	_getImageryLayersByLayerId(layerId) {
+		const result = [];
+		for (let i = 0; i < this._viewer.imageryLayers.length; i++) {
+			const imageryLayer = this._viewer.imageryLayers.get(i);
+			if (imageryLayer.id === layerId) {
+				result.push(imageryLayer);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * @param {number} zIndex Moves provided imageryLayers to zIndex
+	 * @param {Array<ImageryLayer>} imageryLayers - The imageryLayers to operate on. Must exist in the viewer's imageryLayerCollection
+	 */
+	_updateImageryLayersZIndex(zIndex, imageryLayers) {
+		const targetImageryLayer = this._getFirstImageryLayerByZIndex(zIndex);
+		const targetImageryLayerIndex = this._viewer.imageryLayers.indexOf(targetImageryLayer);
+		const currentImageryLayerIndex = this._viewer.imageryLayers.indexOf(imageryLayers[0]);
+		const indexDiff = Math.abs(targetImageryLayerIndex - currentImageryLayerIndex);
+
+		for (let i = indexDiff; i !== 0; i--) {
+			if (currentImageryLayerIndex > targetImageryLayerIndex) {
+				/**
+				 * Note: Due to how the method is called (see _syncLayers()) and because bav4-layers
+				 * are always sorted from lowest to highest z-index, imageryLayers.raise() is never called.
+				 * Those prerequisites ensure that only "lower()" operations are performed.
+				 */
+				imageryLayers.forEach((imageryLayer) => this._viewer.scene.imageryLayers.lower(imageryLayer));
+			}
+		}
+	}
+
+	/**
+	 * @param {Layer} layer The layer which properties are applied to
+	 * @returns {Array<ImageryLayer>} The imageryLayers group to apply the layer properties to
+	 */
+	_setImageryLayersProperties(layer, imageryLayers) {
+		imageryLayers.forEach((imageryLayer) => {
+			imageryLayer.show = layer.visible;
+			imageryLayer.alpha = layer.opacity;
+		});
 	}
 
 	/**
