@@ -694,7 +694,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const setLayerExclusiveVisible = () =>
 			layers
-				.filter((l) => l.zIndex !== 0)
+				//.filter((l) => l.zIndex !== 0)
 				.forEach((l) => {
 					const changedProperties = { ...l, visible: l.id === layerId };
 					modifyLayer(l.id, changedProperties);
@@ -729,7 +729,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 	}
 
 	static isExclusiveVisible(layers, layerId) {
-		return layers.filter((l) => l.zIndex !== 0).every((l) => (l.id === layerId && l.visible) || l.visible === false);
+		return layers.every((l) => (l.id === layerId && l.visible) || l.visible === false);
 	}
 
 	static _getZoomToExtentCapableGeoResources() {
