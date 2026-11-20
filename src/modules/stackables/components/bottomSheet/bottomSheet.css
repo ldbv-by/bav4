@@ -45,6 +45,9 @@
 .tool-container__close-button:hover {
 	background: var(--header-background-color);
 }
+.elevation-profile {
+	height: 230px;
+}
 @keyframes animateIn {
 	0% {
 		transform: translateY(100%);

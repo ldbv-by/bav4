@@ -23,14 +23,14 @@ export const addLegends = (geoResourceIds) => {
 };
 
 /**
- * Removes a geoResourceId from the active legend store.
+ * Removes geoResourceIds from the active legend store.
  * @function
- * @param {string} geoResourceId
+ * @param {string | string[]} geoResourceIds
  */
-export const removeLegend = (geoResourceId) => {
+export const removeLegends = (geoResourceIds) => {
 	getStore().dispatch({
 		type: LEGEND_REMOVED,
-		payload: geoResourceId
+		payload: geoResourceIds
 	});
 };
 

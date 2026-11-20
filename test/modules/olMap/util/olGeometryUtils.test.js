@@ -908,7 +908,7 @@ describe('getStats', () => {
 		expect(statsForLineString.area).toBeNull();
 	});
 
-	it('returns a statistic-object for MultiLineString', () => {
+	it('returns a statistic-object for MultiLineString as Line', () => {
 		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
 		const multiLineString = new MultiLineString([
 			new LineString([
@@ -945,6 +945,51 @@ describe('getStats', () => {
 		expect(statsForGeodesicMultiLineString.azimuth).toBe(42);
 		expect(statsForGeodesicMultiLineString.length).toBe(42);
 		expect(statsForGeodesicMultiLineString.area).toBeNull();
+	});
+
+	it('returns a statistic-object for MultiLineString as Polygon', () => {
+		vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+		vi.spyOn(mapServiceMock, 'calcArea').mockReturnValue(21);
+		const multiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[0, 0]
+			])
+		]);
+		const geodesicMultiLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[0, 0]
+			])
+		]);
+		geodesicMultiLineString.set('azimuth', 42);
+
+		const statsForGeodesicMultiLineString = getStats(geodesicMultiLineString);
+		const statsForMultiLineString = getStats(multiLineString);
+
+		expect(statsForMultiLineString.geometryType).toBe(GeometryType.POLYGON);
+		expect(statsForMultiLineString.coordinate).toBeNull();
+		expect(statsForMultiLineString.azimuth).toBeNull();
+		expect(statsForMultiLineString.length).toBe(84);
+		expect(statsForMultiLineString.area).toBe(21);
+
+		expect(statsForGeodesicMultiLineString.geometryType).toBe(GeometryType.POLYGON);
+		expect(statsForGeodesicMultiLineString.coordinate).toBeNull();
+		expect(statsForGeodesicMultiLineString.azimuth).toBe(42);
+		expect(statsForGeodesicMultiLineString.length).toBe(84);
+		expect(statsForGeodesicMultiLineString.area).toBe(21);
 	});
 
 	it('returns a statistic-object for Polygon', () => {

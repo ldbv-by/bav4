@@ -14,7 +14,7 @@ describe('StringifyCoord provider', () => {
 
 				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn, { digits: 3 })).toBe('48.140 11.572');
 				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn)).toBe('48.14021 11.57246');
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000 20000');
 				expect(transformFn).toHaveBeenCalledWith(coord3857, 3857, 4326);
 			});
 
@@ -23,7 +23,7 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [0, 0, 0];
 				const transformFn = vi.fn().mockReturnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000 20000');
 				expect(transformFn).toHaveBeenCalledWith(coord3857, 3857, 4326);
 			});
 
@@ -168,7 +168,7 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [11.572457, 48.140212, 0];
 				const transformFn = vi.fn().mockReturnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000 20000');
 				expect(transformFn).toHaveBeenCalledWith(normalizedCoord3857, 3857, 4326);
 			});
 		});

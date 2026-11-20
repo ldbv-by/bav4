@@ -694,11 +694,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				 */
 				const feature = selectedFeatures[0];
 				const geodesic = feature.get(asInternalProperty(GEODESIC_FEATURE_PROPERTY));
-				return getStats(
-					geodesic && geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE
-						? geodesic.getGeometry()
-						: feature.getGeometry()
-				);
+				const geodesicStats =
+					geodesic && geodesic.getCalculationStatus() === GEODESIC_CALCULATION_STATUS.ACTIVE ? getStats(geodesic.getGeometry()) : null;
+
+				return geodesicStats
+					? { ...getStats(feature.getGeometry()), length: geodesicStats.length, azimuth: geodesicStats.azimuth }
+					: getStats(feature.getGeometry());
 			}
 
 			if (selectedFeatures.length > 1) {

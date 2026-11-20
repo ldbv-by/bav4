@@ -2705,4 +2705,105 @@ describe('OlMeasurementHandler', () => {
 			expect(feature.get(asInternalProperty('displayruler'))).toBe('true');
 		});
 	});
+
+	describe('_updateStatistic', () => {
+		it('updates statistic for a selected line feature', () => {
+			const store = setup();
+
+			const classUnderTest = new OlMeasurementHandler();
+			const feature = new Feature({
+				geometry: new LineString([
+					[0, 1],
+					[2, 1]
+				])
+			});
+			const selectMock = { getFeatures: () => ({ getLength: () => 1, getArray: () => [feature] }) };
+			classUnderTest._select = selectMock;
+			vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+
+			classUnderTest._updateStatistic();
+
+			expect(store.getState().measurement.statistic).toEqual({
+				geometryType: GeometryType.LINE,
+				coordinate: null,
+				azimuth: 90,
+				length: 42,
+				area: null
+			});
+		});
+
+		it('updates statistic for a selected polygon feature', () => {
+			const store = setup();
+
+			const classUnderTest = new OlMeasurementHandler();
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
+			const selectMock = { getFeatures: () => ({ getLength: () => 1, getArray: () => [feature] }) };
+			classUnderTest._select = selectMock;
+			vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+			vi.spyOn(mapServiceMock, 'calcArea').mockReturnValue(21);
+
+			classUnderTest._updateStatistic();
+
+			expect(store.getState().measurement.statistic).toEqual({
+				geometryType: GeometryType.POLYGON,
+				coordinate: null,
+				azimuth: null,
+				length: 42,
+				area: 21
+			});
+		});
+
+		it('updates statistic for a selected polygon feature with geodesic geometry', () => {
+			const store = setup();
+
+			const classUnderTest = new OlMeasurementHandler();
+			const geometry = new Polygon([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500],
+				[0, 0]
+			]);
+			const geodesicGeometry = new MultiLineString([
+				[
+					[
+						[0, 0],
+						[500, 0],
+						[550, 550],
+						[0, 500],
+						[0, 500],
+						[0, 0]
+					]
+				]
+			]);
+			geodesicGeometry.set(asInternalProperty(PROJECTED_LENGTH_GEOMETRY_PROPERTY), 42);
+			geodesicGeometry.set(AZIMUTH_GEOMETRY_PROPERTY, 42.42);
+			const feature = new Feature({ geometry: geometry });
+			const selectMock = { getFeatures: () => ({ getLength: () => 1, getArray: () => [feature] }) };
+			classUnderTest._select = selectMock;
+			vi.spyOn(mapServiceMock, 'calcLength').mockReturnValue(42);
+			vi.spyOn(mapServiceMock, 'calcArea').mockReturnValue(21);
+
+			classUnderTest._updateStatistic();
+
+			expect(store.getState().measurement.statistic).toEqual({
+				geometryType: GeometryType.POLYGON,
+				coordinate: null,
+				azimuth: null,
+				length: 42,
+				area: 21
+			});
+		});
+	});
 });
