@@ -134,6 +134,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_open_share).toBe('Teilenwerkzeug öffnen');
 		expect(map.toolbox_toolbar_tools_close).toBe('Werkzeugkasten schließen');
 		expect(map.toolbox_toolbar_tools_open).toBe('Werkzeugkasten öffnen');
+		expect(map.toolbox_toolbar_navigation_open).toBe('Navigationsleiste öffnen');
+		expect(map.toolbox_toolbar_navigation_close).toBe('Navigationsleiste schließen');
 	});
 
 	it('provides translation for en', () => {
@@ -264,10 +266,12 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_open_share).toBe('Open share tool');
 		expect(map.toolbox_toolbar_tools_close).toBe('Close toolbox');
 		expect(map.toolbox_toolbar_tools_open).toBe('Open toolbox');
+		expect(map.toolbox_toolbar_navigation_open).toBe('Open navigation rail');
+		expect(map.toolbox_toolbar_navigation_close).toBe('Close navigation rail');
 	});
 
 	it('contains the expected amount of entries', () => {
-		const expectedSize = 125;
+		const expectedSize = 127;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

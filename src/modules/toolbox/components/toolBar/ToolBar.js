@@ -14,6 +14,7 @@ const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_toolid';
 const Update_Auth = 'update_auth';
+const Update_IsOpenNavigationRail = 'update_isOpen_NavigationRail';
 
 /**
  *
@@ -33,7 +34,8 @@ export class ToolBar extends MvuElement {
 			isFetching: false,
 			isPortrait: false,
 			hasMinWidth: false,
-			toolId: null
+			toolId: null,
+			isOpenNavigationRail: false
 		});
 
 		const {
@@ -59,6 +61,8 @@ export class ToolBar extends MvuElement {
 				return { ...model, toolId: data };
 			case Update_Auth:
 				return { ...model, signedIn: data };
+			case Update_IsOpenNavigationRail:
+				return { ...model, isOpenNavigationRail: data };
 		}
 	}
 
@@ -79,6 +83,10 @@ export class ToolBar extends MvuElement {
 			(state) => state.auth.signedIn,
 			(signedIn) => this.signal(Update_Auth, signedIn)
 		);
+		this.observe(
+			(state) => state.navigationRail.open,
+			(isOpenNavigationRail) => this.signal(Update_IsOpenNavigationRail, isOpenNavigationRail)
+		);
 
 		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
@@ -89,7 +97,7 @@ export class ToolBar extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId, signedIn } = model;
+		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId, signedIn, isOpenNavigationRail } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -137,6 +145,10 @@ export class ToolBar extends MvuElement {
 			return isFetching ? 'animated-action-button__border__running' : '';
 		};
 
+		const getActionButtonText = () => {
+			return translate(isOpenNavigationRail ? 'toolbox_toolbar_navigation_close' : 'toolbox_toolbar_navigation_open');
+		};
+
 		const translate = (key) => this.#translationService.translate(key);
 
 		return html`
@@ -151,9 +163,15 @@ export class ToolBar extends MvuElement {
 					class="toolbar__button-tools ${getButtonClass()} "
 					@click=${() => this.signal(Update_IsOpen, !isOpen)}
 				>
+					<span class="hide">
+					${translate('toolbox_toolbar_tools_open')}
+					</span>
 					<div class="wrench"></div>
 				</button>
-				<button id="action-button" data-test-id class="action-button" @click=${toggleNavigationRail}>
+				<button id="action-button" data-test-id class="action-button" title="${getActionButtonText()}" @click=${toggleNavigationRail}>
+					<span class="hide">
+						${getActionButtonText()}
+					</span>
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}"></div>
 					<div class="action-button__icon">
 						<div class="ba"></div>
