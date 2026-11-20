@@ -15,7 +15,6 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { CqlLexer } from '../utils/CqlLexer';
 import { createCqlExpression, createDefaultFilterGroup } from '../utils/oafUtils';
 import addSvg from './assets/add.svg';
-import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
 import exclamationTriangleSvg from './assets/exclamation-triangle-fill.svg';
 import loadingSvg from './assets/loading.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
