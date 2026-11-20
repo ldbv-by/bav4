@@ -13,8 +13,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const lang = configService.getValue('DEFAULT_LANG');
 	const hike = {
 		id: 'hike',
-		label: lang === 'de' ? 'Wandern (schnellste Route)' : 'Hiking (fastest route)',
-		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
+		label: lang === 'de' ? 'Wandern' : 'Hiking',
+		description: lang === 'de' ? 'Üblicherweise schnellste Route' : 'Typically the fastest route',
 		style: {
 			routeColor: 'red',
 			routeBorderColor: 'white'
@@ -23,8 +23,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 	};
 	const bvv_hike = {
 		id: 'bvv-hike',
-		label: lang === 'de' ? 'Wandern (Freizeitwege)' : 'Hiking (BVV Freizeitwege)',
-		description: lang === 'de' ? 'möglichst auf offiziellen Wanderwegen' : 'use "BVV Freizeitwege" tracks where possible',
+		label: lang === 'de' ? 'Wandern (Freizeitwege)' : 'Hiking (Freizeitwege)',
+		description: lang === 'de' ? 'Folgt möglichst offiziellen Wanderwegen' : 'Use "Freizeitwege" tracks where possible',
 		style: {
 			routeColor: 'red',
 			routeBorderColor: 'white',
@@ -35,8 +35,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 	};
 	const bayernnetzBike = {
 		id: 'bayernnetz-bike',
-		label: lang === 'de' ? 'Fahrrad (Bayernnetz)' : 'Bicycle (Bayernnetz)',
-		description: lang === 'de' ? 'möglichst auf Bayernnetz' : 'use "Bayernnetz" tracks where possible',
+		label: lang === 'de' ? 'Fahrrad (Bayernnetz für Radler)' : 'Bicycle (Bayernnetz für Radler)',
+		description: lang === 'de' ? 'Folgt möglichst dem Bayernnetz für Radler' : 'Use "Bayernnetz für Radler" tracks where possible',
 		style: {
 			routeColor: 'blue',
 			routeBorderColor: 'white',
@@ -47,8 +47,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 	};
 	const bike = {
 		id: 'bike',
-		label: lang === 'de' ? 'Fahrrad (schnellste Route)' : 'Bicycle (fastest route)',
-		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
+		label: lang === 'de' ? 'Fahrrad' : 'Bicycle',
+		description: lang === 'de' ? 'Üblicherweise schnellste Route' : 'Typically the fastest route',
 		style: {
 			routeColor: 'green',
 			routeBorderColor: 'white',
@@ -59,8 +59,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 	};
 	const bvv_bike = {
 		id: 'bvv-bike',
-		label: lang === 'de' ? 'Fahrrad (Freizeitwege)' : 'Bicycle (BVV Freizeitwege)',
-		description: lang === 'de' ? 'möglichst auf offiziellen Freizeitwegen' : 'use "BVV Freizeitwege" tracks where possible',
+		label: lang === 'de' ? 'Fahrrad (Freizeitwege)' : 'Bicycle (Freizeitwege)',
+		description: lang === 'de' ? 'Folgt möglichst offiziellen Freizeitwegen' : 'Use "Freizeitwege" tracks where possible',
 		style: {
 			routeColor: 'green',
 			routeBorderColor: 'white',
@@ -73,7 +73,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const mtb = {
 		id: 'mtb',
 		label: lang === 'de' ? 'Mountainbike' : 'Mountain bike',
-		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
+		description: lang === 'de' ? 'Üblicherweise schnellste Route' : 'Typically the fastest route',
 		style: {
 			routeColor: 'SpringGreen',
 			routeBorderColor: 'white'
@@ -83,7 +83,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 	const bvv_mtb = {
 		id: 'bvv-mtb',
 		label: lang === 'de' ? 'Mountainbike (Freizeitwege)' : 'Mountain bike (Freizeitwege)',
-		description: lang === 'de' ? 'möglichst auf offiziellen Freizeitwegen' : 'use "BVV Freizeitwege" tracks where possible',
+		description: lang === 'de' ? 'Folgt möglichst offiziellen Freizeitwegen' : 'Use "Freizeitwege" tracks where possible',
 		style: {
 			routeColor: 'SpringGreen',
 			routeBorderColor: 'white',
@@ -94,8 +94,8 @@ export const bvvRoutingCategoriesProvider = async () => {
 	};
 	const race = {
 		id: 'racingbike',
-		label: lang === 'de' ? 'Rennrad' : 'Racing bike',
-		description: lang === 'de' ? 'schnellste Route' : 'fastest route',
+		label: lang === 'de' ? 'Rennrad' : 'Road bike',
+		description: lang === 'de' ? 'Üblicherweise schnellste Route' : 'Typically the fastest route',
 		style: {
 			routeColor: 'fuchsia',
 			routeBorderColor: 'white',
