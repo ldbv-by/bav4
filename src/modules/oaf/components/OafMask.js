@@ -284,8 +284,7 @@ export class OafMask extends MvuElement {
 
 		const getLoadingHint = (layerState) => {
 			const stateProperties = getLoadingProperties(layerState);
-			return stateProperties
-				? html`<ba-icon
+			return html`<ba-icon
 							.icon=${stateProperties.icon}
 							.title=${stateProperties.title}
 							.size=${'1.2'}
@@ -293,8 +292,7 @@ export class OafMask extends MvuElement {
 							.color_hover=${stateProperties.color}
 							@click=${(e) => onClickStateHint(e, stateProperties)}
 							class="layer-state-icon ${layerState}"
-						></ba-icon>`
-				: nothing;
+				></ba-icon>`;
 		};
 
 		const getStateHint = (layerState) => {
