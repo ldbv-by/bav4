@@ -53,7 +53,8 @@ export const GeoResourceTypes = Object.freeze({
 	RT_VECTOR: Symbol.for('rtvector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
-	FUTURE: Symbol.for('future')
+	FUTURE: Symbol.for('future'),
+	D3_TILES: Symbol.for('3d-tiles')
 });
 
 /**
@@ -1452,6 +1453,39 @@ export class VTGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.VT;
+	}
+}
+
+/**
+ * Represents a 3D Tiles resource for streaming and rendering 3D geospatial data.
+ * @see https://cesium.com/why-cesium/3d-tiles/
+ * @class
+ */
+export class D3TilesGeoResource extends GeoResource {
+	/**
+	 *
+	 * @param {string} id the ID of this GeoResource
+	 * @param {string|null} [label] the label of this GeoResource
+	 * @param {string} url the base URL of the 3D Tiles resource
+	 */
+	constructor(id, label, url) {
+		super(id, label);
+		this._url = url;
+	}
+
+	/**
+	 * The base URL of the 3D Tiles resource.
+	 * @type {string}
+	 */
+	get url() {
+		return this._url;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.D3_TILES;
 	}
 }
 

@@ -3,6 +3,7 @@ import { BaGeometry } from '@src/domain/geometry';
 import {
 	AbstractVectorGeoResource,
 	AggregateGeoResource,
+	D3TilesGeoResource,
 	FEATURE_COLLECTION_GEORESOURCE_ID,
 	GeoResource,
 	GeoResourceAuthenticationType,
@@ -52,7 +53,7 @@ describe('GeoResource', () => {
 
 	describe('GeoResourceTypes', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.entries(GeoResourceTypes).length).toBe(9);
+			expect(Object.entries(GeoResourceTypes).length).toBe(10);
 			expect(Object.isFrozen(GeoResourceTypes)).toBe(true);
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
@@ -63,6 +64,7 @@ describe('GeoResource', () => {
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
+			expect(GeoResourceTypes.D3_TILES.description).toBe('3d-tiles');
 		});
 	});
 
@@ -823,6 +825,17 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
 			expect(vectorGeoResource.styleUrl).toBe('styleUrl');
+		});
+	});
+
+	describe('D3TilesGeoResource', () => {
+		it('instantiates a D3TilesGeoResource', () => {
+			const d3TilesGeoResource = new D3TilesGeoResource('id', 'label', 'https://example.com/tileset.json');
+
+			expect(d3TilesGeoResource.getType()).toEqual(GeoResourceTypes.D3_TILES);
+			expect(d3TilesGeoResource.id).toBe('id');
+			expect(d3TilesGeoResource.label).toBe('label');
+			expect(d3TilesGeoResource.url).toBe('https://example.com/tileset.json');
 		});
 	});
 
