@@ -50,7 +50,7 @@ describe('ImportWmsService', () => {
 				sourceType: new SourceType(SourceTypeName.WMS, '42')
 			};
 			const resultMock = [];
-			const providerSpy = vi.fn('provider').mockResolvedValue(resultMock);
+			const providerSpy = vi.fn().mockResolvedValue(resultMock);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url, subSetOfOptions);
@@ -81,7 +81,7 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms?preserve=me';
 
 			const resultMock = [];
-			const providerSpy = vi.fn('provider').mockResolvedValue(resultMock);
+			const providerSpy = vi.fn().mockResolvedValue(resultMock);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url);
