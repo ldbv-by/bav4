@@ -2,6 +2,7 @@
  * @module modules/layerManager/components/LayerItem
  */
 
+import exclamationDiamondSvg from '@src/assets/icons/exclamation-diamond-fill.svg';
 import exclamationTriangleSvg from '@src/assets/icons/exclamation-triangle-fill.svg';
 import infoSvg from '@src/assets/icons/info.svg';
 import peopleSvg from '@src/assets/icons/people.svg';
@@ -25,7 +26,6 @@ import arrowDownSvg from './assets/arrow-down-short.svg';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import intervalSvg from './assets/clock-fill.svg';
 import cloneSvg from './assets/clone.svg';
-import exclamationDiamondSvg from './assets/exclamation-diamond-fill .svg';
 import eyeSvg from './assets/eye_small.svg';
 import loadingSvg from './assets/loading.svg';
 import oafFilterSvg from './assets/oafFilter.svg';

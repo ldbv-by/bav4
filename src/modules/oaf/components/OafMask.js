@@ -2,6 +2,7 @@
  * @module modules/oaf/components/OafMask
  */
 
+import exclamationDiamondSvg from '@src/assets/icons/exclamation-diamond-fill.svg';
 import exclamationTriangleSvg from '@src/assets/icons/exclamation-triangle-fill.svg';
 import { LayerState } from '@src/domain/layer';
 import { $injector } from '@src/injection';
@@ -240,6 +241,13 @@ export class OafMask extends MvuElement {
 
 		const getStateProperties = (state) => {
 			switch (state) {
+				case LayerState.ERROR:
+					return {
+						icon: exclamationDiamondSvg,
+						color: 'var(--secondary-color)',
+						title: translate(`oaf_mask_title_state_${state}`),
+						level: LevelTypes.ERROR
+					};
 				case LayerState.INCOMPLETE_DATA:
 					return {
 						icon: exclamationTriangleSvg,
@@ -265,6 +273,30 @@ export class OafMask extends MvuElement {
 				: nothing;
 		};
 
+		const getLoadingProperties = (state) => {
+			return {
+				icon: loadingSvg,
+				color: 'var(--secondary-color)',
+				title: translate(`oaf_mask_title_state_${state}`),
+				level: LevelTypes.INFO
+			};
+		};
+
+		const getLoadingHint = (layerState) => {
+			const stateProperties = getLoadingProperties(layerState);
+			return stateProperties
+				? html`<ba-icon
+							.icon=${stateProperties.icon}
+							.title=${stateProperties.title}
+							.size=${'1.2'}
+							.color=${stateProperties.color}
+							.color_hover=${stateProperties.color}
+							@click=${(e) => onClickStateHint(e, stateProperties)}
+							class="layer-state-icon ${layerState}"
+						></ba-icon>`
+				: nothing;
+		};
+
 		const getStateHint = (layerState) => {
 			const stateProperties = getStateProperties(layerState);
 			return stateProperties
@@ -281,14 +313,13 @@ export class OafMask extends MvuElement {
 		};
 
 		const getInfoBarHtml = () => {
-			const title = translate(`layerManager_title_layerState_${layerProperties.state}`);
 			const featureCountState = () => {
 				switch (layerProperties.state) {
 					case LayerState.LOADING:
-						return html`<span id="filter-results">
-							<ba-icon .icon=${loadingSvg} .title=${title} .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
-						</span> `;
-
+						return html`<div class="ba-list-item-badges">
+						${getLoadingHint(layerProperties.state)}
+					</div> `;
+					case LayerState.ERROR:
 					case LayerState.INCOMPLETE_DATA:
 					case LayerState.OK:
 						return html`<div class="ba-list-item-badges">

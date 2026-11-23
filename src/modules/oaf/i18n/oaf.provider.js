@@ -9,6 +9,8 @@ export const provide = (lang) => {
 				oaf_mask_add_filter_group: 'Add Filter Group',
 				oaf_mask_button_apply: 'Apply',
 				oaf_mask_feature_count: 'Number of features',
+				oaf_mask_title_state_loading: 'Data loading...',
+				oaf_mask_title_state_error: 'Data could not be loaded',
 				oaf_mask_title_state_incomplete_data: 'Data loaded incomplete',
 				oaf_mask_zoom_to_extent: 'Zoom on current result',
 				oaf_mask_filter_not_displayable: 'The CQL expression cannot be displayed visually. The expression can be edited using the “Edit CQL” button.',
@@ -51,6 +53,8 @@ export const provide = (lang) => {
 				oaf_mask_add_filter_group: 'Neue Filtergruppe',
 				oaf_mask_button_apply: 'Anwenden',
 				oaf_mask_feature_count: 'Anzahl der Elemente',
+				oaf_mask_title_state_loading: 'Daten werden geladen...',
+				oaf_mask_title_state_error: 'Daten konnten nicht geladen werden',
 				oaf_mask_title_state_incomplete_data: 'Daten wurden nur teilweise geladen',
 				oaf_mask_zoom_to_extent: 'Auf aktuelles Ergebnis zoomen',
 				oaf_mask_filter_not_displayable:

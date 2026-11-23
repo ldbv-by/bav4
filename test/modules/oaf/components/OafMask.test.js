@@ -301,10 +301,10 @@ describe('OafMask', () => {
 			it('shows feature count when layer state is ready', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.OK, props: { featureCount: 10 } });
 				const filterResultsElem = element.shadowRoot.querySelector('.feature-count-badge');
-				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				const loadingElem = element.shadowRoot.querySelector(`.layer-state-icon.${LayerState.LOADING}`);
 				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
 
-				expect(loadingSvg).toBeNull();
+				expect(loadingElem).toBeNull();
 				expect(partiallyLoadedHintElem).toBeNull();
 				expect(filterResultsElem.label).toBe(10);
 			});
@@ -313,21 +313,46 @@ describe('OafMask', () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.INCOMPLETE_DATA, props: { featureCount: 15 } });
 				const featureResultsElem = element.shadowRoot.querySelector('.feature-count-badge');
 				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
-				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
+				const loadingElem = element.shadowRoot.querySelector(`.layer-state-icon.${LayerState.LOADING}`);
 
-				expect(loadingSvg).toBeNull();
+				expect(loadingElem).toBeNull();
 				expect(partiallyLoadedHintElem).not.toBeNull();
 				expect(partiallyLoadedHintElem.title).toBe('oaf_mask_title_state_incomplete_data');
 				expect(featureResultsElem.label).toBe(15);
 			});
 
+			it('shows feature count when layer state has an error', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.ERROR, props: { featureCount: 15 } });
+				const featureResultsElem = element.shadowRoot.querySelector('.feature-count-badge');
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.ERROR}`);
+				const loadingElem = element.shadowRoot.querySelector(`.layer-state-icon.${LayerState.LOADING}`);
+
+				expect(loadingElem).toBeNull();
+				expect(partiallyLoadedHintElem).not.toBeNull();
+				expect(partiallyLoadedHintElem.title).toBe('oaf_mask_title_state_error');
+				expect(featureResultsElem.label).toBe(15);
+			});
+
 			it('shows loading icon when layer state is not ready', async () => {
 				const element = await setup({}, {}, { layerId: 1, state: LayerState.LOADING, props: { featureCount: 10 } });
-				const loadingSvg = element.shadowRoot.querySelector('#filter-results ba-icon.loading');
-				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.INCOMPLETE_DATA}`);
+				const loadingHintElem = element.shadowRoot.querySelector(`.layer-state-icon.${LayerState.LOADING}`);
 
-				expect(partiallyLoadedHintElem).toBeNull();
-				expect(loadingSvg).not.toBeNull();
+				expect(loadingHintElem.title).toBe('oaf_mask_title_state_loading');
+				expect(loadingHintElem).not.toBeNull();
+			});
+
+			it('sends notification for currently loading data when loading-hint is clicked', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.LOADING, props: { featureCount: 15 } });
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.layer-state-icon.${LayerState.LOADING}`);
+				const event = new Event('click');
+				const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+				const stopPropagationSpy = vi.spyOn(event, 'stopPropagation');
+				partiallyLoadedHintElem.dispatchEvent(event);
+
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+				expect(store.getState().notifications.latest.payload.content).toBe(partiallyLoadedHintElem.title);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			});
 
 			it('sends notification for partially loaded data when warning-hint is clicked', async () => {
@@ -342,6 +367,20 @@ describe('OafMask', () => {
 				expect(stopPropagationSpy).toHaveBeenCalled();
 				expect(store.getState().notifications.latest.payload.content).toBe(partiallyLoadedHintElem.title);
 				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			});
+
+			it('sends notification for partially loaded data when error-hint is clicked', async () => {
+				const element = await setup({}, {}, { layerId: 1, state: LayerState.ERROR, props: { featureCount: 15 } });
+				const partiallyLoadedHintElem = element.shadowRoot.querySelector(`.state-badge.${LayerState.ERROR}`);
+				const event = new Event('click');
+				const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+				const stopPropagationSpy = vi.spyOn(event, 'stopPropagation');
+				partiallyLoadedHintElem.dispatchEvent(event);
+
+				expect(preventDefaultSpy).toHaveBeenCalled();
+				expect(stopPropagationSpy).toHaveBeenCalled();
+				expect(store.getState().notifications.latest.payload.content).toBe(partiallyLoadedHintElem.title);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			});
 
 			it('refreshes ui when layerId changes', async () => {
