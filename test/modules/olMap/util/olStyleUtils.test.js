@@ -381,7 +381,7 @@ describe('getMeasureStyleFunction', () => {
 	});
 
 	it('should draw clockwise geometry in reversed order to context with linear ruler-style', () => {
-		const contextRenderer = vi.fn('contextRenderer');
+		const contextRenderer = vi.fn();
 		const segments = [];
 		contextRenderer.mockImplementation((segment, fill, stroke) =>
 			stroke.getWidth() === 2 ? segment.getCoordinates().forEach((c) => segments.push(c)) : () => {}

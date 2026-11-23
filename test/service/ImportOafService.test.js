@@ -96,7 +96,7 @@ describe('ImportOafService', () => {
 			const url = 'https://some.url/oaf?preserve=me';
 
 			const resultMock = [];
-			const oafGeoResourceProviderSpy = vi.fn('provider').mockResolvedValue(resultMock);
+			const oafGeoResourceProviderSpy = vi.fn().mockResolvedValue(resultMock);
 			const instanceUnderTest = new ImportOafService(oafGeoResourceProviderSpy);
 
 			const result = await instanceUnderTest.forUrl(url);

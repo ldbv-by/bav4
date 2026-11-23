@@ -91,7 +91,7 @@ describe('ImportStaService', () => {
 			const url = 'https://some.url/sta?preserve=me';
 
 			const resultMock = [];
-			const staGeoResourceProviderSpy = vi.fn('provider').mockResolvedValue(resultMock);
+			const staGeoResourceProviderSpy = vi.fn().mockResolvedValue(resultMock);
 			const instanceUnderTest = new ImportStaService(staGeoResourceProviderSpy);
 
 			const result = await instanceUnderTest.forUrl(url);

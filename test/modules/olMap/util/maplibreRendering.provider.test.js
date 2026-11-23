@@ -73,7 +73,7 @@ describe('maplibreRendering.provider', () => {
 		});
 
 		it('renders and encodes an image', async () => {
-			const renderMapFactoryMock = vi.fn('renderMapFactoryMock').mockReturnValue({
+			const renderMapFactoryMock = vi.fn().mockReturnValue({
 				getCanvas: () => {
 					return { toDataURL: () => 'data:image/png;base64,TESTIMAGE' };
 				},
