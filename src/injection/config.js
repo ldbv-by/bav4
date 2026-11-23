@@ -74,9 +74,9 @@ import { TopicsService } from '@src/services/TopicsService';
 import { TranslationService } from '@src/services/TranslationService';
 import { UnitsService } from '@src/services/UnitsService';
 import { UrlService } from '@src/services/UrlService';
+import { ViewService } from '@src/services/ViewService';
 import { $injector } from '.';
 import { fileStorageServiceFactory } from './factories';
-import { ViewService } from '@src/services/ViewService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
