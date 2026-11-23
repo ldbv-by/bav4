@@ -76,6 +76,7 @@ import { UnitsService } from '@src/services/UnitsService';
 import { UrlService } from '@src/services/UrlService';
 import { $injector } from '.';
 import { fileStorageServiceFactory } from './factories';
+import { ViewService } from '@src/services/ViewService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -115,6 +116,7 @@ $injector
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
+	.register('ViewService', ViewService)
 	.registerSingleton('GeoResourceLegendService', new GeoResourceLegendService())
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())
