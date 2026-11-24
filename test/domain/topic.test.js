@@ -11,6 +11,12 @@ describe('Topic', () => {
 			'defaultBaseGeoRHighRes',
 			'defaultBaseGeoRDarkMode',
 			'defaultBaseGeoRHighContrast',
+			{
+				default: [
+					{ id: 'extra0', visible: true },
+					{ id: 'extra1', visible: false }
+				]
+			},
 			['ac0', 'ac2'],
 			['sel0', 'sel2'],
 			{
@@ -27,6 +33,12 @@ describe('Topic', () => {
 		expect(topic.defaultBaseGeoRHighRes).toBe('defaultBaseGeoRHighRes');
 		expect(topic.defaultBaseGeoRDarkMode).toBe('defaultBaseGeoRDarkMode');
 		expect(topic.defaultBaseGeoRHighContrast).toBe('defaultBaseGeoRHighContrast');
+		expect(topic.extraGeoRs).toEqual({
+			default: [
+				{ id: 'extra0', visible: true },
+				{ id: 'extra1', visible: false }
+			]
+		});
 		expect(topic.activatedGeoRs).toEqual(['ac0', 'ac2']);
 		expect(topic.selectedGeoRs).toEqual(['sel0', 'sel2']);
 		expect(topic.style).toEqual({ hue: 42, icon: 'svg' });
@@ -40,6 +52,7 @@ describe('Topic', () => {
 		expect(topic.defaultBaseGeoRHighRes).toBeNull();
 		expect(topic.defaultBaseGeoRDarkMode).toBeNull();
 		expect(topic.defaultBaseGeoRHighContrast).toBeNull();
+		expect(topic.extraGeoRs).toBeNull();
 		expect(topic.selectedGeoRs).toEqual([]);
 		expect(topic.activatedGeoRs).toEqual([]);
 		expect(topic.style.hue).toBeNull();

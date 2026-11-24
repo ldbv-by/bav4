@@ -34,6 +34,7 @@ export const loadBvvTopics = async () => {
 				definition.defaultBaseGeoRHighRes,
 				definition.defaultBaseGeoRDarkMode,
 				definition.defaultBaseGeoRHighContrast,
+				definition.extraGeoRs,
 				definition.activatedGeoRs,
 				definition.selectedGeoRs,
 				definition.style
