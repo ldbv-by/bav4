@@ -284,3 +284,39 @@ ba-spinner {
 	flex-direction: column;
 	justify-content: space-between;
 }
+
+.ba-list-item-badges {
+	display: flex;
+	justify-content: center;
+	z-index: 1;
+	align-self: start;
+}
+.ba-list-item-badges ba-badge::part(badge) {
+	border-radius: 0;
+}
+.ba-list-item-badges ba-badge:first-child::part(badge) {
+	border-radius: 2em 0 0 2em;
+	padding: 0.2em 0.2em 0.2em 0.5em;
+}
+.ba-list-item-badges ba-badge:last-child::part(badge) {
+	border-radius: 0 2em 2em 0;
+	padding: 0.2em 0.5em 0.2em 0.2em;
+}
+.ba-list-item-badges ba-badge:only-child::part(badge) {
+	border-radius: 2em 2em 2em 2em;
+	padding: 0.2em 0.5em 0.2em 0.5em;
+}
+.ba-list-item-badges ba-icon {
+	display: flex;
+}
+.ba-list-item-badges ba-badge {
+	display: flex;
+}
+
+.ba-list-item-badges:not(:has(*)) {
+	display: none !important;
+}
+.ba-list-item-badges:has(*) ~ * {
+	margin-top: 1em !important;
+	margin-bottom: 0.3em !important;
+}

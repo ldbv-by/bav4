@@ -2,12 +2,15 @@
  * @module modules/oaf/components/OafMask
  */
 
+import exclamationDiamondSvg from '@src/assets/icons/exclamation-diamond-fill.svg';
+import exclamationTriangleSvg from '@src/assets/icons/exclamation-triangle-fill.svg';
 import { LayerState } from '@src/domain/layer';
 import { $injector } from '@src/injection';
 import { MvuElement } from '@src/modules/MvuElement';
 import { modifyLayer } from '@src/store/layers/layers.action';
 import { emitNotification, LevelTypes } from '@src/store/notifications/notifications.action';
 import { fitLayer } from '@src/store/position/position.action';
+import { isNumber } from '@src/utils/checks';
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
@@ -169,6 +172,12 @@ export class OafMask extends MvuElement {
 			this._updateLayer(this.#cqlExpression);
 		};
 
+		const onClickStateHint = (e, stateProperties) => {
+			e.preventDefault();
+			e.stopPropagation();
+			emitNotification(stateProperties.title, stateProperties.level);
+		};
+
 		const getFilterGroupLabel = () => {
 			return this.getModel().filterGroups.length === 0 ? translate('oaf_mask_add_filter_group') : '';
 		};
@@ -230,26 +239,91 @@ export class OafMask extends MvuElement {
 				<ba-button id="btn-console-apply" .type=${'primary'} .label=${translate('oaf_mask_button_apply')} @click=${onCqlConsoleConfirm}></ba-button>
 			</div>`;
 
+		const getStateProperties = (state) => {
+			switch (state) {
+				case LayerState.ERROR:
+					return {
+						icon: exclamationDiamondSvg,
+						color: 'var(--secondary-color)',
+						title: translate(`oaf_mask_title_state_${state}`),
+						level: LevelTypes.ERROR
+					};
+				case LayerState.INCOMPLETE_DATA:
+					return {
+						icon: exclamationTriangleSvg,
+						color: 'var(--secondary-color)',
+						title: translate(`oaf_mask_title_state_${state}`),
+						level: LevelTypes.WARN
+					};
+				default:
+					return null;
+			}
+		};
+
+		const getFeatureCountBadge = (featureCount, layerState) => {
+			return isNumber(featureCount) && layerState !== LayerState.LOADING
+				? html`<ba-badge
+						class="feature-count-badge"
+						.background=${'var(--secondary-color)'}
+						.label=${featureCount}
+						.title=${translate('oaf_mask_feature_count')}
+						.color=${'var(--text5)'}
+						.size=${'1'}
+					></ba-badge>`
+				: nothing;
+		};
+
+		const getLoadingProperties = (state) => {
+			return {
+				icon: loadingSvg,
+				color: 'var(--secondary-color)',
+				title: translate(`oaf_mask_title_state_${state}`),
+				level: LevelTypes.INFO
+			};
+		};
+
+		const getLoadingHint = (layerState) => {
+			const stateProperties = getLoadingProperties(layerState);
+			return html`<ba-icon
+							.icon=${stateProperties.icon}
+							.title=${stateProperties.title}
+							.size=${'1.2'}
+							.color=${stateProperties.color}
+							.color_hover=${stateProperties.color}
+							@click=${(e) => onClickStateHint(e, stateProperties)}
+							class="layer-state-icon ${layerState}"
+				></ba-icon>`;
+		};
+
+		const getStateHint = (layerState) => {
+			const stateProperties = getStateProperties(layerState);
+			return stateProperties
+				? html`<ba-badge
+						.icon=${stateProperties.icon}
+						.title=${stateProperties.title}
+						.size=${'.95'}
+						.background=${stateProperties.color}
+						.color=${'var(--text5)'}
+						@click=${(e) => onClickStateHint(e, stateProperties)}
+						class="state-badge ${layerState}"
+					></ba-badge>`
+				: nothing;
+		};
+
 		const getInfoBarHtml = () => {
-			const title = translate(`layerManager_title_layerState_${layerProperties.state}`);
 			const featureCountState = () => {
 				switch (layerProperties.state) {
 					case LayerState.LOADING:
-						return html`<span id="filter-results">
-							<ba-icon .icon=${loadingSvg} .title=${title} .size=${1.3} .color=${'var(--secondary-color)'} class="loading"></ba-icon>
-						</span> `;
-
+						return html`<div class="ba-list-item-badges">
+						${getLoadingHint(layerProperties.state)}
+					</div> `;
+					case LayerState.ERROR:
 					case LayerState.INCOMPLETE_DATA:
 					case LayerState.OK:
-						return html`
-							<ba-badge
-								id="filter-results-badge"
-								.background=${'var(--secondary-color)'}
-								.label=${layerProperties.featureCount}
-								.color=${'var(--text5)'}
-								.size=${0.9}
-								.title=${translate('oaf_mask_filter_results') + ' ' + layerProperties.featureCount}
-							></ba-badge>
+						return html`<div class="ba-list-item-badges">
+						${getFeatureCountBadge(layerProperties.featureCount, layerProperties.state)}
+						${getStateHint(layerProperties.state)}
+					</div>
 						`;
 				}
 			};
