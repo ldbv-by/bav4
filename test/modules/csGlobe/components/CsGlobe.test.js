@@ -312,7 +312,7 @@ describe('CsGlobe', () => {
 			expect(viewerCamSpy).not.toHaveBeenCalled();
 		});
 
-		it("does nothing when source can't extent provide an extent", async () => {
+		it("does nothing when source can't provide an extent", async () => {
 			const element = await setup();
 			const extent = null;
 			const fitSpy = vi.spyOn(element, '_fitToExtent');

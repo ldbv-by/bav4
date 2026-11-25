@@ -287,13 +287,17 @@ export class CsGlobe extends MvuElement {
 		});
 	}
 
+	/*
+	 * Note: maxZoom and useVisibleViewport like in OlMap is not supported at the moment
+	 * since there is no immediate use case for it and has to be planned out how it will
+	 * be implemented in future versions of the CsGlobe component.
+	 */
 	_fitToExtent(payload) {
 		const isEmpty = (extent) => {
 			return extent[2] < extent[0] || extent[3] < extent[1];
 		};
 
 		const extent = payload.extent;
-
 		if (extent && !isEmpty(extent)) {
 			const convertedExtent = this._coordinateService.toLonLatExtent(extent);
 			const padding = CsGlobe.DEFAULT_PADDING_DEGREE;
