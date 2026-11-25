@@ -109,7 +109,7 @@ describe('CsGlobe', () => {
 
 	describe('class', () => {
 		it('exposes static constants', async () => {
-			expect(CsGlobe.DEFAULT_PADDING_DEGREE).toEqual([0.5, 0.5, 0.5, 0.5]);
+			expect(CsGlobe.DEFAULT_PADDING_DEGREE).toEqual([0.005, 0.005, 0.005, 0.005]);
 		});
 	});
 
@@ -276,6 +276,27 @@ describe('CsGlobe', () => {
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(fitSpy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ extent: extent }));
+			await TestUtils.timeout();
+
+			expect(syncSpy).toHaveBeenCalled();
+			expect(viewerCamSpy).toHaveBeenCalled();
+		});
+
+		it('fits to an extent with custom maxZoom option', async () => {
+			const element = await setup();
+			const extent = [10, 80, 10, 80];
+			const fitSpy = vi.spyOn(element, '_fitToExtent');
+			const syncSpy = vi.spyOn(element, '_syncStore');
+			const viewerCamSpy = vi.spyOn(element._viewer.camera, 'flyTo');
+			const calcPosSpy = vi.spyOn(element, '_calculate3DDestination');
+			vi.spyOn(element, '_cartesianToZoomLevel').mockReturnValue(10);
+
+			fitMap(extent, { maxZoom: 8, useVisibleViewport: false });
+
+			expect(store.getState().position.fitRequest).not.toBeNull();
+			expect(fitSpy).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ extent: extent, options: { maxZoom: 8, useVisibleViewport: false } }));
+			expect(calcPosSpy).toHaveBeenCalledWith(expect.anything(), 8);
+
 			await TestUtils.timeout();
 
 			expect(syncSpy).toHaveBeenCalled();

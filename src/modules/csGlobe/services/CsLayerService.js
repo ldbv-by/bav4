@@ -8,6 +8,8 @@ import { GeoResourceAuthenticationType, GeoResourceTypes } from '@src/domain/geo
 import { $injector } from '@src/injection';
 
 const Default_WMS_Version = '1.1.1';
+const Default_WMS_TileWidth = 512;
+const Default_WMS_TileHeight = 512;
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -73,8 +75,10 @@ export class CsLayerService {
 					parameters: {
 						format: geoResource.format,
 						version: Default_WMS_Version,
-						...geoResource.extraParams,
-						transparent: true // enforces to treat alpha channel of non-opaque wms as transparent
+						tileWidth: Default_WMS_TileWidth,
+						tileHeight: Default_WMS_TileHeight,
+						transparent: true, // enforces to treat alpha channel of non-opaque wms as transparent
+						...geoResource.extraParams
 					}
 				});
 

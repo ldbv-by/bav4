@@ -69,8 +69,10 @@ describe('CsLayerService', () => {
 				parameters: {
 					format: wmsGeoResource.format,
 					version: '1.1.1',
-					...wmsGeoResource.extraParams,
-					transparent: true
+					transparent: true,
+					tileWidth: 512,
+					tileHeight: 512,
+					...wmsGeoResource.extraParams
 				}
 			});
 		});
