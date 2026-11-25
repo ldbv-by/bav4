@@ -23,6 +23,12 @@ describe('Topics provider', () => {
 			defaultBaseGeoRHighContrast: 'mockBaseLayerHighContrast',
 			selectedGeoRs: ['mockSelectedLayer'],
 			baseGeoRs: { default: ['mockBgLayer1', 'mockBgLayer2'] },
+			extraGeoRs: {
+				default: [
+					{ id: 'mockExtraLayer1', visible: true },
+					{ id: 'mockExtraLayer2', visible: false }
+				]
+			},
 			activatedGeoRs: ['mockActivatedLayer'],
 			id: 'Ref42',
 			label: 'LDBV',
@@ -57,6 +63,7 @@ describe('Topics provider', () => {
 		expect(topic1.defaultBaseGeoRDarkMode).toBe(topicMock1.defaultBaseGeoRDarkMode);
 		expect(topic1.defaultBaseGeoRHighContrast).toBe(topicMock1.defaultBaseGeoRHighContrast);
 		expect(topic1.baseGeoRs).toEqual(topicMock1.baseGeoRs);
+		expect(topic1.extraGeoRs).toEqual(topicMock1.extraGeoRs);
 		expect(topic1.activatedGeoRs).toEqual(topicMock1.activatedGeoRs);
 		expect(topic1.selectedGeoRs).toEqual(topicMock1.selectedGeoRs);
 		expect(topic1.notNeeded).toBeUndefined();
@@ -72,6 +79,7 @@ describe('Topics provider', () => {
 		expect(topic2.defaultBaseGeoRHighRes).toBeNull();
 		expect(topic2.defaultBaseGeoRDarkMode).toBeNull();
 		expect(topic2.defaultBaseGeoRHighContrast).toBeNull();
+		expect(topic2.extraGeoRs).toBeNull();
 		expect(topic2.activatedGeoRs).toHaveLength(0);
 		expect(topic2.selectedGeoRs).toHaveLength(0);
 		expect(topic2.notNeeded).toBeUndefined();

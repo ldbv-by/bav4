@@ -32,6 +32,8 @@ export class ProcessEnvConfigService {
 
 		this._properties.set('BACKEND_ADMIN_TOKEN', window?.ba_externalConfigProperties?.BACKEND_ADMIN_TOKEN ?? process.env.BACKEND_ADMIN_TOKEN);
 
+		this._properties.set('CS_TERRAIN_URL', window?.ba_externalConfigProperties?.CS_TERRAIN_URL ?? process.env.CS_TERRAIN_URL);
+
 		this._properties.set(
 			'FRONTEND_URL',
 			window?.ba_externalConfigProperties?.FRONTEND_URL ?? process.env.FRONTEND_URL ?? `${location.protocol}//${location.host}`

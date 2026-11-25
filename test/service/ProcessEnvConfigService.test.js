@@ -35,7 +35,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			const instance = new ProcessEnvConfigService();
 
 			expect(instance.isLoggingEnabled()).toBe(true);
-			expect(warnSpy).toHaveBeenCalledTimes(4);
+			expect(warnSpy).toHaveBeenCalledTimes(5);
 		});
 		it('does NOT warn when configured accordingly', () => {
 			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -57,7 +57,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('provides the correct set of values', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(9);
+			expect(configService._properties.size).toBe(10);
 		});
 
 		it('provides hardcoded values', () => {
@@ -76,6 +76,7 @@ describe('tests for ProcessEnvConfigService', () => {
 				FRONTEND_URL: 'FRONTEND_URL_value',
 				BACKEND_URL: 'BACKEND_URL_value',
 				BACKEND_ADMIN_TOKEN: 'BACKEND_ADMIN_TOKEN_value',
+				CS_TERRAIN_URL: 'CS_TERRAIN_URL_value',
 				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value'
 			};
 
@@ -88,6 +89,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('FRONTEND_URL')).toBe('FRONTEND_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 			expect(configService.getValue('BACKEND_ADMIN_TOKEN')).toBe('BACKEND_ADMIN_TOKEN_value');
+			expect(configService.getValue('CS_TERRAIN_URL')).toBe('CS_TERRAIN_URL_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
@@ -103,6 +105,7 @@ describe('tests for ProcessEnvConfigService', () => {
 				FRONTEND_URL: 'FRONTEND_URL_value',
 				BACKEND_URL: 'BACKEND_URL_value',
 				BACKEND_ADMIN_TOKEN: 'BACKEND_ADMIN_TOKEN_value',
+				CS_TERRAIN_URL: 'CS_TERRAIN_URL_value',
 				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value'
 			};
 
@@ -114,6 +117,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 			expect(configService.getValue('BACKEND_ADMIN_TOKEN')).toBe('BACKEND_ADMIN_TOKEN_value');
+			expect(configService.getValue('CS_TERRAIN_URL')).toBe('CS_TERRAIN_URL_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();

@@ -74,6 +74,7 @@ import { TopicsService } from '@src/services/TopicsService';
 import { TranslationService } from '@src/services/TranslationService';
 import { UnitsService } from '@src/services/UnitsService';
 import { UrlService } from '@src/services/UrlService';
+import { ViewService } from '@src/services/ViewService';
 import { $injector } from '.';
 import { fileStorageServiceFactory } from './factories';
 
@@ -115,6 +116,7 @@ $injector
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
 	.register('PredefinedConfigurationService', BvvPredefinedConfigurationService)
+	.register('ViewService', ViewService)
 	.registerSingleton('GeoResourceLegendService', new GeoResourceLegendService())
 	.registerSingleton('GlobalErrorPlugin', new GlobalErrorPlugin())
 	.registerSingleton('AuthPlugin', new AuthPlugin())

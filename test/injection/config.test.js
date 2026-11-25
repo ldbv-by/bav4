@@ -6,7 +6,7 @@ import { Injector } from '@src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBe(true);
-		expect($injector.count()).toBe(93);
+		expect($injector.count()).toBe(94);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ConfigService')).toBe(Injector.SCOPE_SINGLETON);
@@ -46,6 +46,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('PredefinedConfigurationService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('HtmlPrintService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('GeoResourceLegendService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('ViewService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('GlobalErrorPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('AuthPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);

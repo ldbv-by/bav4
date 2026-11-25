@@ -117,6 +117,7 @@ export class TopicsService {
 				'vt_basemap_world',
 				null,
 				null,
+				null,
 				[],
 				[],
 				{
@@ -136,6 +137,7 @@ export class TopicsService {
 					]
 				},
 				'tpo',
+				null,
 				null,
 				null,
 				null,

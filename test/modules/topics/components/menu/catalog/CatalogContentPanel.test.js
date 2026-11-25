@@ -197,7 +197,7 @@ describe('TopicsContentPanel', () => {
 		it('renders the topic style', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', null, null, null, null, null, [], [], { hue: 42, icon: 'icon' });
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', null, null, null, null, null, null, [], [], { hue: 42, icon: 'icon' });
 
 			vi.spyOn(topicsServiceMock, 'byId').mockReturnValue(topic);
 			const catalogServiceSpy = vi.spyOn(catalogServiceMock, 'byId').mockResolvedValue(testCatalog);

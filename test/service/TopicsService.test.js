@@ -79,6 +79,7 @@ describe('TopicService', () => {
 				expect(topics[0].defaultBaseGeoRHighRes).toBe('vt_basemap_world');
 				expect(topics[0].defaultBaseGeoRDarkMode).toBeNull();
 				expect(topics[0].defaultBaseGeoRHighContrast).toBeNull();
+				expect(topics[0].extraGeoRs).toBeNull();
 				expect(topics[1].id).toBe(fallbackId1);
 				expect(topics[1].baseGeoRs.raster[0]).toBe('tpo');
 				expect(topics[1].baseGeoRs.raster[1]).toBe('tpo_mono');
@@ -86,6 +87,7 @@ describe('TopicService', () => {
 				expect(topics[1].defaultBaseGeoRHighRes).toBeNull();
 				expect(topics[1].defaultBaseGeoRDarkMode).toBeNull();
 				expect(topics[1].defaultBaseGeoRHighContrast).toBeNull();
+				expect(topics[1].extraGeoRs).toBeNull();
 				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
 
