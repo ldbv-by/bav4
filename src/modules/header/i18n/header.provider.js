@@ -28,7 +28,7 @@ export const provide = (lang) => {
 				header_tab_topics_button: 'Themen',
 				header_tab_routing_button: 'Routing',
 				header_tab_topics_title: 'Themen öffnen',
-				header_tab_maps_button: 'Karte',
+				header_tab_maps_button: ' Ebenen',
 				header_tab_maps_title: 'Kartenverwaltung öffnen',
 				header_tab_misc_button: 'Mehr...',
 				header_tab_misc_title: 'Weitere Einstellungen und Informationen',
