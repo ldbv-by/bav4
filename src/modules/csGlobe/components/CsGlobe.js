@@ -8,7 +8,20 @@ import { removeLayer } from '@src/store/layers/layers.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '@src/store/map/map.action';
 import { setBeingDragged } from '@src/store/pointer/pointer.action';
 import { changeLiveZoomCenterRotationPitchAndRoll, changeZoomCenterRotationPitchRoll } from '@src/store/position/position.action';
-import { Cartesian3, Cartographic, Math as CesiumMath, Clock, ClockViewModel, Color, JulianDate, Rectangle, Viewer } from 'cesium';
+import {
+	BoundingSphere,
+	Cartesian2,
+	Cartesian3,
+	Cartographic,
+	Math as CesiumMath,
+	Clock,
+	ClockViewModel,
+	Color,
+	HeightReference,
+	JulianDate,
+	Rectangle,
+	Viewer
+} from 'cesium';
 import cesiumWidgetCss from 'cesium/Build/Cesium/Widgets/widgets.css?inline';
 import { html } from 'lit-html';
 import { calculateSpatialHeight, calculateSpatialResolution } from '../utils/csGlobeUtils';
@@ -283,23 +296,18 @@ export class CsGlobe extends MvuElement {
 	 * be implemented in future versions of the CsGlobe component.
 	 */
 	_fitToExtent(payload) {
+		const extent = payload.extent;
 		const isEmpty = (extent) => {
 			return extent[2] < extent[0] || extent[3] < extent[1];
 		};
 
-		const calculateFitPosition = () => {
+		const calculateFitPosition = (extent) => {
 			const convertedExtent = this._coordinateService.toLonLatExtent(extent);
-			const padding = CsGlobe.DEFAULT_PADDING_DEGREE;
 			const maxZoom = payload.options.maxZoom ? payload.options.maxZoom : this._mapService.getMaxZoomLevel();
-			const rectangle = Rectangle.fromDegrees(
-				convertedExtent[0] - padding[0],
-				convertedExtent[1] + padding[1],
-				convertedExtent[2] + padding[2],
-				convertedExtent[3] - padding[3]
-			);
+			const rectangle = Rectangle.fromDegrees(convertedExtent[0], convertedExtent[1], convertedExtent[2], convertedExtent[3]);
 
 			const cartesianPosition = this._viewer.camera.getRectangleCameraCoordinates(rectangle);
-			const cartesianZoomLevel = Math.ceil(this._cartesianToZoomLevel(cartesianPosition));
+			const cartesianZoomLevel = Math.round(this._cartesianToZoomLevel(cartesianPosition));
 			const cartographicPosition = Cartographic.fromCartesian(cartesianPosition);
 			const fromLonLatCenter = this._coordinateService.fromLonLat([
 				CesiumMath.toDegrees(cartographicPosition.longitude),
@@ -309,16 +317,49 @@ export class CsGlobe extends MvuElement {
 			return this._calculate3DDestination(fromLonLatCenter, cartesianZoomLevel > maxZoom ? maxZoom : cartesianZoomLevel);
 		};
 
-		const extent = payload.extent;
 		if (extent && !isEmpty(extent)) {
-			this._viewer.camera.flyTo({
-				destination: calculateFitPosition(),
+			const destination = calculateFitPosition(extent);
+			const canvas = this._viewer.scene.canvas;
+			const viewportPadding = this._mapService.getVisibleViewport(canvas);
+			const padding = payload.options.useVisibleViewport
+				? [
+						viewportPadding.top + CsGlobe.DEFAULT_PADDING_PX[0],
+						viewportPadding.right + CsGlobe.DEFAULT_PADDING_PX[1],
+						viewportPadding.bottom + CsGlobe.DEFAULT_PADDING_PX[2],
+						viewportPadding.left + CsGlobe.DEFAULT_PADDING_PX[3]
+					]
+				: CsGlobe.DEFAULT_PADDING_PX;
+			const deltaPaddingX = 0.5 * (padding[1] - padding[3]);
+			const deltaPaddingY = 0.5 * (padding[0] - padding[2]);
+
+			// Move camera to correct position
+			this._viewer.camera.setView({
+				destination: destination,
 				orientation: {
 					heading: this._viewer.camera.heading,
 					pitch: -CesiumMath.PI_OVER_TWO,
 					roll: 0
 				},
 				duration: 0
+			});
+
+			// Adjust camera position by padding
+			this._moveCameraByPixels(deltaPaddingX, deltaPaddingY);
+			this._viewer.entities.add({
+				name: 'Start',
+				position: destination,
+				point: {
+					pixelSize: 30,
+					color: Color.RED,
+					outlineColor: Color.WHITE,
+					outlineWidth: 2,
+					heightReference: HeightReference.CLAMP_TO_GROUND // stick to terrain
+				},
+				label: {
+					text: 'My point',
+					font: '14px sans-serif',
+					pixelOffset: new Cartesian2(0, -20)
+				}
 			});
 			this._syncStore();
 		}
@@ -434,6 +475,31 @@ export class CsGlobe extends MvuElement {
 		return Cartesian3.fromDegrees(projectedCenter[0], projectedCenter[1], spatialHeight);
 	}
 
+	_calculateCartesianToZoomHeight(cartesian, zoom) {
+		const cartographic = Cartographic.fromCartesian(cartesian);
+		const lon = CesiumMath.toDegrees(cartographic.longitude);
+		const lat = CesiumMath.toDegrees(cartographic.latitude);
+		const resolution = this._mapService.calcResolution(zoom, this._coordinateService.fromLonLat([lon, lat]));
+
+		return Cartesian3.fromDegrees(lon, lat, calculateSpatialHeight(resolution, this._viewer.canvas.clientWidth));
+	}
+
+	_moveCameraByPixels(x = 0, y = 0) {
+		const viewer = this._viewer;
+		const scene = viewer.scene;
+		const camera = viewer.camera;
+		const canvas = scene.canvas;
+
+		const center = new Cartesian2(canvas.clientWidth * 0.5, canvas.clientHeight * 0.5);
+		const target = scene.globe.pick(camera.getPickRay(center), scene);
+
+		if (target) {
+			const metersPerPixel = camera.getPixelSize(new BoundingSphere(target, 0), scene.drawingBufferWidth, scene.drawingBufferHeight);
+			camera.moveRight(x * metersPerPixel);
+			camera.moveDown(y * metersPerPixel);
+		}
+	}
+
 	/**
 	 * Sets the default configuration for the cesium viewer. Configuration is not updated after the viewer was rendered the first time.
 	 * It is useful to remove WebGL context in tests e.g.
@@ -442,10 +508,8 @@ export class CsGlobe extends MvuElement {
 		this.#viewerConfiguration = value;
 	}
 
-	static get DEFAULT_PADDING_DEGREE() {
-		const val = 0.005;
-
-		return Array.of(val, val, val, val);
+	static get DEFAULT_PADDING_PX() {
+		return Array.of(10, 10, 10, 10);
 	}
 
 	/**
