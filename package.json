@@ -3,7 +3,7 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "2.0.0",
 		"chart.js": "4.6.2",
-		"dompurify": "3.4.18",
+		"dompurify": "3.5.0",
 		"geographiclib-geodesic": "2.2.0",
 		"lit-html": "3.3.3",
 		"maplibre-gl": "6.19.0",
