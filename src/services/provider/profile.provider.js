@@ -4,7 +4,6 @@
 
 import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
-import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateService';
 
 /**
  * BVV specific implementation of {@link module:services/ElevationService~profileProvider}
@@ -27,9 +26,8 @@ export const getBvvProfile = async (coordinateLikes3857) => {
 	 * - transformation to other projection than the used projections in the app
 	 */
 	const projectedDistance = mapService.calcLength(coordinates3857);
-	const simplifiedCoordinates = coordinateService.simplify(coordinates3857, CoordinateSimplificationTarget.ELEVATION_PROFILE);
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/profile';
-	const requestPayload = { coords: simplifiedCoordinates.map((c) => ({ e: c[0], n: c[1] })) };
+	const requestPayload = { coords: coordinates3857.map((c) => ({ e: c[0], n: c[1] })) };
 	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
 	const replaceDistance = (profile, distance) => {
 		const { stats, ...rest } = profile;
