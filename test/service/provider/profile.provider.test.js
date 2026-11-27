@@ -1,6 +1,5 @@
 import { MediaType } from '@src/domain/mediaTypes';
 import { $injector } from '@src/injection';
-import { CoordinateSimplificationTarget } from '@src/services/OlCoordinateService';
 import { getBvvProfile } from '@src/services/provider/profile.provider';
 
 describe('profile provider', () => {
@@ -179,7 +178,7 @@ describe('profile provider', () => {
 			const profile = await getBvvProfile(coords);
 
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
-			expect(coordinateServiceSpy0).toHaveBeenCalledWith(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE);
+			expect(coordinateServiceSpy0).not.toHaveBeenCalled();
 			expect(coordinateServiceSpy1).toHaveBeenCalledWith(coords);
 			expect(mapServiceSpy).toHaveBeenCalledWith(coords);
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON);
@@ -205,7 +204,7 @@ describe('profile provider', () => {
 
 			await expect(getBvvProfile(coords)).rejects.toThrow('Profile could not be fetched: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalledWith('BACKEND_URL');
-			expect(coordinateServiceSpy0).toHaveBeenCalledWith(coords, CoordinateSimplificationTarget.ELEVATION_PROFILE);
+			expect(coordinateServiceSpy0).not.toHaveBeenCalled();
 			expect(coordinateServiceSpy1).toHaveBeenCalledWith(coords);
 			expect(httpServiceSpy).toHaveBeenCalledWith(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON);
 		});
